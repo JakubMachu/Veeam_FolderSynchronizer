@@ -25,6 +25,35 @@ namespace Veeam_FolderSynchronizer
             var logFile = args[3];
 
             Console.WriteLine($"Synchronization of folders: {sourceFolder} and {replicaFolder} with interval: {syncInterval} ms");
+
+            while (true)
+            {
+                SynchronizeFolders(sourceFolder, replicaFolder, logFile);
+                Thread.Sleep(syncInterval);
+            }
+        }
+
+        static void SynchronizeFolders(var sourceFolder, var replicaFolder, var logFile)
+        {
+            try
+            {
+                var[] sourceFiles = Directory.GetFiles(sourceFolder, "*", SearchOption.AllDirectories);
+
+                foreach(var sourceFile in sourceFiles)
+                {
+                    var relativePath = sourceFile.Substring.(sourceFolder.Length);
+                    var replicaFile = replicaFolder + relativePath;
+
+                    if (!File.Exists(replicaFile) || !AreaFilesEqual(sourceFile, replicaFile))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(replicaFile));
+                        File.Copy(sourceFile, replicaFile, true);   
+                        LogAction.(logFile, $"Copying a file: {sourceFile} --> {replicaFile}");
+                    }
+                }
+
+                
+            }
         }
     }
 }
