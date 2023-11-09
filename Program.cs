@@ -71,8 +71,25 @@ namespace Veeam_FolderSynchronizer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"There were a problem during synchronization of: {sourceFolder} and {replicaFolder} --> {ex.Message}");
+                Console.WriteLine($"There were a problem during synchronization --> {ex.Message}");
             }
-        } 
+        }
+        
+        static void LogAction(var logFile, var action)
+        {
+            try
+            {
+                using (var writer = File.AppendText(logFile))
+                {
+                    writer.WriteLine($"{DateTime.Now}: {action}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Logging error --> {ex.Message}");
+            }
+
+            Console.WriteLine(action);
+        }
     }
 }
