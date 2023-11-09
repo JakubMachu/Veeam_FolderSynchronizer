@@ -1,95 +1,86 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.Security.Cryptography;
-using System.Linq.Expressions;
+using System.Threading;
 
-namespace Veeam_FolderSynchronizer
+class Program
 {
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
-            if (args.Length < 3)
-            {
-                Console.WriteLine("Warning: Wrong usage!");
-                Console.WriteLine("Correct usage: FolderSync.exe \"<sourceFolder>\" \"<replicaFolder>\" <syncInterval> \"<logFile>\"")
-                    return;
-            }
+	static void Main(string[] args)
+	{
+		if (args.Length != 4)
+		{
+			Console.WriteLine("Invalid number of arguments! Please, try again with 4 arguments.");
+			Console.WriteLine("Correct usage: Program.exe <source_folder> <replica_folder> <sync_interval_seconds> <log_file_path>");
+			return;
+		}
 
-            var sourceFolder = args[0];
-            var replicaFolder = args[1];
-            var syncInterval = int.Parse(args[2]);
-            var logFile = args[3];
+		string sourceFolder = args[0];
+		string replicaFolder = args[1];
+		int syncIntervalSeconds = int.Parse(args[2]);
+		string logFilePath = args[3];
 
-            Console.WriteLine($"Synchronization of folders: {sourceFolder} and {replicaFolder} with interval: {syncInterval} ms");
+		Console.WriteLine("Press Enter to quit.");
 
-            while (true)
-            {
-                SynchronizeFolders(sourceFolder, replicaFolder, logFile);
-                Thread.Sleep(syncInterval);
-            }
-        }
+		while (true)
+		{
+			if (Console.KeyAvailable)
+			{
+				ConsoleKeyInfo key = Console.ReadKey(intercept: true);
+				if (key.Key == ConsoleKey.Enter)
+				{
+					Console.WriteLine("Quitting...");
+					break;
+				}
+			}
 
-        static void SynchronizeFolders(var sourceFolder, var replicaFolder, var logFile)
-        {
-            try
-            {
-                //Source files section\\
-                var[] sourceFiles = Directory.GetFiles(sourceFolder, "*", SearchOption.AllDirectories);
+			SynchronizeFolders(sourceFolder, replicaFolder, logFilePath);
+			Thread.Sleep(syncIntervalSeconds * 1000);
+		}
+	}
 
-                foreach (var sourceFile in sourceFiles)
-                {
-                    var relativePath = sourceFile.Substring.(sourceFolder.Length);
-                    var replicaFile = replicaFolder + relativePath;
+	static void SynchronizeFolders(string sourceFolder, string replicaFolder, string logFilePath)
+	{
+		try
+		{
+			string[] sourceFiles = Directory.GetFiles(sourceFolder, "*", SearchOption.AllDirectories);
 
-                    if (!File.Exists(replicaFile) || !AreaFilesEqual(sourceFile, replicaFile))
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(replicaFile));
-                        File.Copy(sourceFile, replicaFile, true);
-                        LogAction.(logFile, $"Copying a file: {sourceFile} --> {replicaFile}");
-                    }
-                }
+			foreach (string sourceFilePath in sourceFiles)
+			{
+				string replicaFilePath = sourceFilePath.Replace(sourceFolder, replicaFolder);
+				string replicaFileFolder = Path.GetDirectoryName(replicaFilePath);
 
-                //Replica files section\\
-                var[] replicaFiles = Directory.GetFiles(replicaFolder, "*", SearchOption.AllDirectories);
+				if (!Directory.Exists(replicaFileFolder))
+				{
+					Directory.CreateDirectory(replicaFileFolder);
+				}
 
-                foreach (var replicaFile in replicaFiles)
-                {
-                    var relativePath = replicaFile.Substring(replicaFolder.Length);
-                    var sourceFile = sourceFolder + relativePath;
+				File.Copy(sourceFilePath, replicaFilePath, true);
 
-                    if (File.Exists(sourceFile))
-                    {
-                        File.Delete(replicaFile);
-                        LogAction(logFile, $"Deleting a file: {replicaFile}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"There were a problem during synchronization --> {ex.Message}");
-            }
-        }
-        
-        static void LogAction(var logFile, var action)
-        {
-            try
-            {
-                using (var writer = File.AppendText(logFile))
-                {
-                    writer.WriteLine($"{DateTime.Now}: {action}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Logging error --> {ex.Message}");
-            }
+				LogToFile(logFilePath, $"<<Success>> Copied: {sourceFilePath} to {replicaFilePath} <<Success>>");
+				Console.WriteLine($"<<Success>> Copied: {sourceFilePath} to {replicaFilePath} <<Success>>");
+			}
+		}
+		catch (Exception ex)
+		{
+			LogToFile(logFilePath, $"Error: {ex.Message}");
+			Console.WriteLine($"Error: {ex.Message}");
+		}
+	}
 
-            Console.WriteLine(action);
-        }
-    }
+	static void LogToFile(string logFilePath, string message)
+	{
+		try
+		{
+			using (StreamWriter sw = File.AppendText(logFilePath))
+			{
+				sw.WriteLine($"{DateTime.Now}: {message}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error writing to log file: {ex.Message}");
+		}
+	}
 }
+
+
+
