@@ -4,14 +4,13 @@
 
 The Folder Synchronization Application is a C# program that periodically synchronizes the content of a source folder with a replica folder. It ensures that the replica folder maintains an identical copy of the source folder.
 
-The Logger class is responsible for logging, and the FolderSynchronizer class handles the synchronization logic. 
-The Program class remains the entry point for the application.
+The LogToFile method is responsible for logging, and the SynchronizeFolders method handles the synchronization logic. 
 
 ## Features
 
 - One-way synchronization from source to replica.
-- Periodic synchronization at user-defined intervals.
-- Logging of file creation, copying, and removal operations.
+- Periodic synchronization at user-defined intervals (in seconds).
+- Logging of file creation and copyin operations.
 
 ## Requirements
 
@@ -28,7 +27,14 @@ https://github.com/JakubMachu/FolderSynchronizer
 3. Open the solution in Visual Studio.
 
 4. Build the solution to generate the executable.
-
+   To do so:
+   - Open Developer Command Prompt in Visual Studio and use:
+    ```
+   csc Program.cs
+    ```
+    - That will create Program.exe in your repository.
+5. Create LogFile.txt in your reository after you generate your executable.
+   
 ## Usage
 
 1. Open a command prompt (Win + R, type "cmd," and press Enter to open a command prompt) or terminal (macOS or Linux).
@@ -41,23 +47,23 @@ https://github.com/JakubMachu/FolderSynchronizer
 
 4. Run the application with the following command-line arguments:
 
-FolderSynchronizer.exe <sourceFolder> <replicaFolder> <synchronizationInterval> <logFilePath>
+Program.exe <sourceFolder> <replicaFolder> <syncIntervalSeconds> <logFilePath>
 
 - `<sourceFolder>`: The path to the source folder you want to synchronize.
 - `<replicaFolder>`: The path to the replica folder where the content will be synchronized.
-- `<interval>`: The synchronization interval in milliseconds.
+- `<syncIntervalSeconds>`: The synchronization interval in milliseconds.
 - `<logFilePath>`: The path to the log file where synchronization actions will be recorded.
 
-4. The application will start synchronizing the folders. You can stop it by pressing Ctrl + C.
+4. The application will start synchronizing the folders. You can stop it by pressing <ENTER>.
 
 ## Examples
 
 Here are some example commands to run the application:
 
 ```
-FolderSynchronizer.exe C:\SourceFolder D:\ReplicaFolder 60000 C:\Log\sync.log
+Program.exe "C:\MyFiles\SourceFolder" "D:\MyFiles\ReplicaFolder" 10  "C:\MyFiles\GitRepository\LogFile.txt"
 ```
-This command synchronizes "C:\SourceFolder" with "D:\ReplicaFolder" every 60 seconds and logs the actions to "C:\Log\sync.log."
+That command synchronizes "C:\MyFiles\SourceFolder"  with "D:\MyFiles\ReplicaFolder" every 10 seconds and logs the actions to "C:\MyFiles\GitRepository\LogFile.txt" and console.
 
 ## Acknowledgments
-Thanks to the Google and ChatGPT.
+Thanks to the Google and ChatGPT <3
