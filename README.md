@@ -1,4 +1,4 @@
-# Folder Synchronization Application
+# Folder Synchronization ConsoleApp
 
 ## Description
 
