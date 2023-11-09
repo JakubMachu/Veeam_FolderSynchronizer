@@ -2,84 +2,85 @@
 using System.IO;
 using System.Threading;
 
-class Program
+namespace Veeam_FolderSynchronizer
 {
-	static void Main(string[] args)
+	internal class Program
 	{
-		if (args.Length != 4)
+		private static void Main(string[] args)
 		{
-			Console.WriteLine("Invalid number of arguments! Please, try again with 4 arguments.");
-			Console.WriteLine("Correct usage: Program.exe <source_folder> <replica_folder> <sync_interval_seconds> <log_file_path>");
-			return;
-		}
-
-		string sourceFolder = args[0];
-		string replicaFolder = args[1];
-		int syncIntervalSeconds = int.Parse(args[2]);
-		string logFilePath = args[3];
-
-		while (true)
-		{
-			if (Console.KeyAvailable)
+			if (args.Length != 4)
 			{
-				ConsoleKeyInfo key = Console.ReadKey(intercept: true);
-				if (key.Key == ConsoleKey.Enter)
-				{
-					Console.WriteLine("Quitting...");
-					break;
-				}
+				Console.WriteLine("Invalid number of arguments! Please, try again with 4 arguments.");
+				Console.WriteLine(
+					"Correct usage: Program.exe <source_folder> <replica_folder> <sync_interval_seconds> <log_file_path>");
+				return;
 			}
 
-			SynchronizeFolders(sourceFolder, replicaFolder, logFilePath);
-			Thread.Sleep(syncIntervalSeconds * 1000);
-		}
-	}
+			var sourceFolder = args[0];
+			var replicaFolder = args[1];
+			var syncIntervalSeconds = int.Parse(args[2]);
+			var logFilePath = args[3];
 
-	static void SynchronizeFolders(string sourceFolder, string replicaFolder, string logFilePath)
-	{
-		try
-		{
-			string[] sourceFiles = Directory.GetFiles(sourceFolder, "*", SearchOption.AllDirectories);
-
-			foreach (string sourceFilePath in sourceFiles)
+			while (true)
 			{
-				string replicaFilePath = sourceFilePath.Replace(sourceFolder, replicaFolder);
-				string replicaFileFolder = Path.GetDirectoryName(replicaFilePath);
-
-				if (!Directory.Exists(replicaFileFolder))
+				if (Console.KeyAvailable)
 				{
-					Directory.CreateDirectory(replicaFileFolder);
+					var key = Console.ReadKey(intercept: true);
+					if (key.Key == ConsoleKey.Enter)
+					{
+						Console.WriteLine("Quitting...");
+						break;
+					}
 				}
 
-				File.Copy(sourceFilePath, replicaFilePath, true);
-
-				LogToFile(logFilePath, $"<<Success>> Copied: {sourceFilePath} to {replicaFilePath}");
-				Console.WriteLine($"<<Success>> Copied: {sourceFilePath} to {replicaFilePath}");
-				Console.WriteLine("Press <ENTER> to quit.");
+				SynchronizeFolders(sourceFolder, replicaFolder, logFilePath);
+				Thread.Sleep(syncIntervalSeconds * 1000);
 			}
 		}
-		catch (Exception ex)
-		{
-			LogToFile(logFilePath, $"Error: {ex.Message}");
-			Console.WriteLine($"Error: {ex.Message}");
-		}
-	}
 
-	static void LogToFile(string logFilePath, string message)
-	{
-		try
+		public static void SynchronizeFolders(string sourceFolder, string replicaFolder, string logFilePath)
 		{
-			using (StreamWriter sw = File.AppendText(logFilePath))
+			try
 			{
-				sw.WriteLine($"{DateTime.Now}: {message}");
+				var sourceFiles = Directory.GetFiles(sourceFolder, "*", SearchOption.AllDirectories);
+
+				foreach (var sourceFilePath in sourceFiles)
+				{
+					var replicaFilePath = sourceFilePath.Replace(sourceFolder, replicaFolder);
+					var replicaFileFolder = Path.GetDirectoryName(replicaFilePath);
+
+					if (!Directory.Exists(replicaFileFolder))
+					{
+						Directory.CreateDirectory(replicaFileFolder);
+					}
+
+					File.Copy(sourceFilePath, replicaFilePath, true);
+
+					LogToFile(logFilePath, $"<<Success>> Copied: {sourceFilePath} to {replicaFilePath}");
+					Console.WriteLine($"<<Success>> Copied: {sourceFilePath} to {replicaFilePath}");
+					Console.WriteLine("Press <ENTER> to quit.");
+				}
+			}
+			catch (Exception ex)
+			{
+				LogToFile(logFilePath, $"Error: {ex.Message}");
+				Console.WriteLine($"Error: {ex.Message}");
 			}
 		}
-		catch (Exception ex)
+
+		public static void LogToFile(string logFilePath, string message)
 		{
-			Console.WriteLine($"Error writing to log file: {ex.Message}");
+			try
+			{
+				using (var sw = File.AppendText(logFilePath))
+				{
+					sw.WriteLine($"{DateTime.Now}: {message}");
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error writing to log file: {ex.Message}");
+			}
 		}
 	}
 }
-
-
-
