@@ -18,8 +18,6 @@ class Program
 		int syncIntervalSeconds = int.Parse(args[2]);
 		string logFilePath = args[3];
 
-		Console.WriteLine("Press Enter to quit.");
-
 		while (true)
 		{
 			if (Console.KeyAvailable)
@@ -55,8 +53,9 @@ class Program
 
 				File.Copy(sourceFilePath, replicaFilePath, true);
 
-				LogToFile(logFilePath, $"<<Success>> Copied: {sourceFilePath} to {replicaFilePath} <<Success>>");
-				Console.WriteLine($"<<Success>> Copied: {sourceFilePath} to {replicaFilePath} <<Success>>");
+				LogToFile(logFilePath, $"<<Success>> Copied: {sourceFilePath} to {replicaFilePath}");
+				Console.WriteLine($"<<Success>> Copied: {sourceFilePath} to {replicaFilePath}");
+				Console.WriteLine("Press <ENTER> to quit.");
 			}
 		}
 		catch (Exception ex)
