@@ -61,7 +61,7 @@ Program.exe <sourceFolder> <replicaFolder> <syncIntervalSeconds> <logFilePath>
 Here are some example commands to run the application:
 
 ```
-Program.exe "C:\MyFiles\SourceFolder" "D:\MyFiles\ReplicaFolder" 10  "C:\MyFiles\GitRepository\LogFile.txt"
+Program.exe "C:\MyFiles\SourceFolder" "D:\MyFiles\ReplicaFolder" 10 "C:\MyFiles\GitRepository\LogFile.txt"
 ```
 That command synchronizes "C:\MyFiles\SourceFolder"  with "D:\MyFiles\ReplicaFolder" every 10 seconds and logs the actions to "C:\MyFiles\GitRepository\LogFile.txt" and console.
 
